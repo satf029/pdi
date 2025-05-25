@@ -11,7 +11,7 @@ import cv2
 
 
 def generate_marker(binary_image):
-    inverted_image = 1-binary_image
+    inverted_image =cv2.bitwise_not(binary_image)
     # Crear la imagen marcador
     marker = np.zeros_like(binary_image)
     marker[0, :] = inverted_image[0, :]
@@ -39,23 +39,28 @@ def morphological_reconstruction(marker, mask):
 
 mask = cv2.imread('pdi.bmp', 0)
 # Convertir las imágenes a binarias
-_, mask_bin = cv2.threshold(mask, 127, 1, cv2.THRESH_BINARY)
+_, mask_bin = cv2.threshold(mask, 127, 255, cv2.THRESH_BINARY)
 
-image_inverted = 1-mask_bin
+image_inverted = cv2.bitwise_not(mask_bin)
 marker = generate_marker(image_inverted)
 # Llamar a la función de reconstrucción morfológica
-reconstructed = morphological_reconstruction(marker,1-mask_bin)
-imagen_A =(1-mask_bin) - reconstructed
-imagen_A= 1-imagen_A
+reconstructed = morphological_reconstruction(marker,image_inverted)
+imagen_A =image_inverted - (reconstructed*255)
+imagen_A= cv2.bitwise_not(imagen_A)
 # Convertir la imagen reconstruida a formato 8-bit para visualización
 # reconstructed = (reconstructed * 255).astype(np.uint8)
-imagen_A_invertida = 1-imagen_A
-marker_b = generate_marker(imagen_A_invertida)
-reconstructed_2 = morphological_reconstruction(marker_b,imagen_A_invertida)
-
+imagen_A_inverted = cv2.bitwise_not(imagen_A)
+marker_b = generate_marker(imagen_A_inverted)
+print(np.unique(marker_b))
+reconstructed_2 = morphological_reconstruction(marker_b,imagen_A)
+reconstructed_2 = (reconstructed_2 * 255).astype(np.uint8)
+reconstructed_inv = cv2.bitwise_not(reconstructed)
+holes = cv2.bitwise_xor(imagen_A_inverted, reconstructed_2)
 # Mostrar las imágenes
-cv2.imshow('Original', mask_bin*255)
-cv2.imshow('Imagen A', imagen_A*255)
-cv2.imshow('Imagen Invertida',reconstructed_2*255)
+# cv2.imshow('Original', mask_bin)
+# cv2.imshow('Imagen A', imagen_A)
+cv2.imshow('Imagen Invertida',imagen_A_inverted)
+cv2.imshow('reconstruccion', reconstructed_2)
+cv2.imshow('holes', holes)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
