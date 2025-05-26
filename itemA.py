@@ -75,19 +75,35 @@ imagen_D = cv2.bitwise_not(imagen_D)
 #parte 5
 imagen_C_inverted = cv2.bitwise_not(imagen_C)
 marker_e = generate_marker(imagen_C_inverted)
-reconstructed_e = morphological_reconstruction(marker_e, imagen_C_inverted)
-imagen_E_binaria = (reconstructed_e * 255).astype(np.uint8)
-imagen_E = cv2.bitwise_not(imagen_E_binaria)
+reconstructed_e = morphological_reconstruction(marker_e, imagen_C)
+
+reconstructed_e = morphological_reconstruction(reconstructed_e, imagen_C_inverted)
+imagen_E_inv = reconstructed_e * 255
+imagen_ = cv2.bitwise_xor(imagen_E_inv, imagen_C)
+imagen_E = cv2.bitwise_not(reconstructed_e*255)
+
+# print(np.unique(marker))
+# print(imagen_A)
+# print(np.unique(reconstructed_2))
+
+
+cv2.imshow('C',imagen_C)
+cv2.imshow('C invertida', imagen_C_inverted)
+cv2.imshow('E invertida', imagen_E_inv)
+cv2.imshow('imagen_', imagen_)
+
 
 
 
 # Mostrar las imágenes
-cv2.imshow('Original', mask_bin)
-cv2.imshow('Imagen A', imagen_A)
-cv2.imshow('Imagen B', imagen_B)
-cv2.imshow('Imagen C', imagen_C)
-cv2.imshow('Imagen D', imagen_D)
-cv2.imshow('Imagen E', imagen_E)
+# cv2.imshow('Original', mask_bin)
+# cv2.imshow('Imagen A', imagen_A)
+# cv2.imshow('Imagen B', imagen_B)
+# cv2.imshow('Imagen C', imagen_C)
+# cv2.imshow('Imagen D', imagen_D)
+# cv2.imshow('Imagen E', imagen_E)
+
+
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
