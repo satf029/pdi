@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jun  6 11:46:12 2024
-
-@author: jvazquez
+@author: Samuel Torres y Edis Fernandez
 """
 
 import numpy as np
@@ -51,14 +49,45 @@ imagen_A= cv2.bitwise_not(imagen_A)
 # reconstructed = (reconstructed * 255).astype(np.uint8)
 imagen_A_inverted = cv2.bitwise_not(imagen_A)
 marker_b = generate_marker(imagen_A_inverted)
-print(np.unique(marker_b))
+
 reconstructed_2 = morphological_reconstruction(marker_b,imagen_A)
 reconstructed_2 = (reconstructed_2 * 255).astype(np.uint8)
-reconstructed_inv = cv2.bitwise_not(reconstructed)
 imagen_B = cv2.bitwise_xor(imagen_A_inverted, reconstructed_2)
+
+#parte 3
+# Invertir imagen B (núcleos) para que estén en blanco como semillas
+imagen_B_inv = cv2.bitwise_not(imagen_B)
+
+# Reconstrucción: expandimos desde núcleos dentro de citoplasmas
+reconstructed_C = morphological_reconstruction(imagen_B_inv, imagen_A_inverted)
+
+# Convertir a imagen visible
+imagen_C_binaria = (reconstructed_C * 255).astype(np.uint8)
+
+# Invertimos para que los objetos sean negros sobre fondo blanco
+imagen_C = cv2.bitwise_not(imagen_C_binaria)
+
+#parte 4
+
+imagen_D = cv2.bitwise_xor(imagen_C, imagen_A)
+imagen_D = cv2.bitwise_not(imagen_D)
+
+#parte 5
+imagen_C_inverted = cv2.bitwise_not(imagen_C)
+marker_e = generate_marker(imagen_C_inverted)
+reconstructed_e = morphological_reconstruction(marker_e, imagen_C_inverted)
+imagen_E_binaria = (reconstructed_e * 255).astype(np.uint8)
+imagen_E = cv2.bitwise_not(imagen_E_binaria)
+
+
+
 # Mostrar las imágenes
 cv2.imshow('Original', mask_bin)
 cv2.imshow('Imagen A', imagen_A)
 cv2.imshow('Imagen B', imagen_B)
+cv2.imshow('Imagen C', imagen_C)
+cv2.imshow('Imagen D', imagen_D)
+cv2.imshow('Imagen E', imagen_E)
+
 cv2.waitKey(0)
 cv2.destroyAllWindows()
