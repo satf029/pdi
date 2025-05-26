@@ -108,7 +108,20 @@ reconstructed_e = morphological_reconstruction(reconstructed_e, imagen_C_inverte
 imagen_E_inv = cv2.bitwise_xor(reconstructed_e*255, imagen_C_inverted)
 imagen_E = cv2.bitwise_not(imagen_E_inv)
 
+#parte 6
+# Paso 1: Invertir imagen E para que los objetos sean blancos (semillas)
+imagen_E_inverted = cv2.bitwise_not(imagen_E)
 
+reconstructed_f = morphological_reconstruction(imagen_E_inverted ,imagen_C)
+reconstructed_f =reconstructed_f *255
+
+reconstructed_f2 = morphological_reconstruction(reconstructed_f ,imagen_C_inverted)
+reconstructed_f2 =reconstructed_f2 *255
+imagen_F = cv2.bitwise_not(reconstructed_f2 )
+
+#parte 7
+imagen_a_menos_d= cv2.bitwise_not(cv2.bitwise_xor(imagen_A, imagen_D))
+imagen_G= cv2.bitwise_not(cv2.bitwise_xor(imagen_a_menos_d, imagen_F))
 
 
 # Mostrar las imágenes
@@ -118,7 +131,8 @@ cv2.imshow('Imagen B', imagen_B)
 cv2.imshow('Imagen C', imagen_C)
 cv2.imshow('Imagen D', imagen_D)
 cv2.imshow('Imagen E', imagen_E)
-
+cv2.imshow('Imagen F', imagen_F)
+cv2.imshow('Imagen G', imagen_G)
 
 
 cv2.waitKey(0)
