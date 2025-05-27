@@ -138,10 +138,10 @@ for region in regionprops(labeled_image):
     inv_cell = 1 - cell_mask
     holes = label(inv_cell)
     # Calcular áreas (ignorando fondo 0)
-    areas = [np.sum(holes == i) for i in range(1, np.max(holes) + 1)]
+    areas = [np.sum(holes == i) for i in range(2, np.max(holes) + 1)]
     max_hole_area = max(areas) if areas else 0
     # Clasificación
-    if max_hole_area > 68152:
+    if max_hole_area > 15:
         tipo = 3
         tipo3_count += 1
         color = 200
@@ -151,7 +151,6 @@ for region in regionprops(labeled_image):
         color = 100
     # cv2.imshow('hole', inv_cell)
     output[labeled_image == region.label] = color
-
 
 print(f'Células Tipo 2: {tipo2_count}')
 print(f'Células Tipo 3: {tipo3_count}')
