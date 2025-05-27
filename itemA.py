@@ -125,10 +125,14 @@ imagen_a_menos_d= cv2.bitwise_not(cv2.bitwise_xor(imagen_A, imagen_D))
 imagen_G= cv2.bitwise_not(cv2.bitwise_xor(imagen_a_menos_d, imagen_F))
 
 #parte 8
+#invertimos la imagen
 imagen_G_inverted = cv2.bitwise_not(imagen_G)
+#variables que contaran el tipo de celula
 tipo2_count, tipo3_count = 0, 0
+#pasamos a binario y pasamos como argumento
 labeled_image = label((imagen_G_inverted == 255).astype(np.uint8),connectivity=2)
 output = np.zeros_like(labeled_image, dtype=np.uint8)
+#por cada objeto distinto calculamos el area
 for region in regionprops(labeled_image):
     cell_mask = (labeled_image == region.label)
     inv_cell = 1 - cell_mask
@@ -136,7 +140,6 @@ for region in regionprops(labeled_image):
     # Calcular áreas (ignorando fondo 0)
     areas = [np.sum(holes == i) for i in range(1, np.max(holes) + 1)]
     max_hole_area = max(areas) if areas else 0
-    # print(f"Área de agujero para célula {region.label}: {max_hole_area}")
     # Clasificación
     if max_hole_area > 68152:
         tipo = 3
@@ -147,7 +150,6 @@ for region in regionprops(labeled_image):
         tipo2_count += 1
         color = 100
     # cv2.imshow('hole', inv_cell)
-        # Colorear el resultado (opcional)
     output[labeled_image == region.label] = color
 
 
