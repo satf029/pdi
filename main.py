@@ -8,6 +8,9 @@ from scipy.ndimage import binary_dilation
 from skimage.measure import label, regionprops
 import cv2
 
+####################################################################
+# ---------------------definicion de funciones------------------------
+#####################################################################
 
 def generate_marker(binary_image):
     inverted_image =cv2.bitwise_not(binary_image)
@@ -36,6 +39,11 @@ def morphological_reconstruction(marker, mask):
 
     return reconstructed
 
+
+####################################################################
+# ------------------------TEMA 1------------------------------------
+#####################################################################
+
 mask = cv2.imread('pdi.bmp', 0)
 # Convertir las imágenes a binarias
 _, mask_bin = cv2.threshold(mask, 127, 255, cv2.THRESH_BINARY)
@@ -55,9 +63,13 @@ reconstructed = morphological_reconstruction(marker,image_inverted)
 imagen_A =image_inverted - (reconstructed*255)
 #invertimos para volver a la escala de la imagen original
 imagen_A= cv2.bitwise_not(imagen_A)
-##################################################################
-# TEMA 2
+
+
+####################################################################
+# ------------------------TEMA 2------------------------------------
 #####################################################################
+
+
 #nuevamente hacemos que las celulas esten pintados con blanco
 # es decir, hacemos que el objeto este con 255
 imagen_A_inverted = cv2.bitwise_not(imagen_A)
@@ -74,7 +86,14 @@ reconstructed_2 = (reconstructed_2 * 255).astype(np.uint8)
 # Por eso se aplica xor para que pinte en blanco los nucleos de las celulas
 imagen_B = cv2.bitwise_xor(imagen_A_inverted, reconstructed_2)
 
-#parte 3
+
+
+####################################################################
+# ------------------------TEMA 3------------------------------------
+#####################################################################
+
+
+
 # Invertir imagen B (núcleos) para que estén en blanco como semillas
 # utilizaremos la imagen B como marcador
 imagen_B_inv = cv2.bitwise_not(imagen_B)
@@ -88,12 +107,20 @@ imagen_C_binaria = (reconstructed_C * 255).astype(np.uint8)
 # Invertimos para que los objetos sean negros sobre fondo blanco
 imagen_C = cv2.bitwise_not(imagen_C_binaria)
 
-#parte 4
+
+
+#####################################################################
+# ------------------------TEMA 4------------------------------------
+#####################################################################
 
 imagen_D = cv2.bitwise_xor(imagen_C, imagen_A)
 imagen_D = cv2.bitwise_not(imagen_D)
 
-#parte 5
+####################################################################
+# ------------------------TEMA 5------------------------------------
+#####################################################################
+
+
 # hacemos que los objetos a analizar sean 255
 imagen_C_inverted = cv2.bitwise_not(imagen_C)
 #generamos el marcador de donde se va a rellenar
@@ -109,8 +136,12 @@ reconstructed_e = morphological_reconstruction(reconstructed_e, imagen_C_inverte
 imagen_E_inv = cv2.bitwise_xor(reconstructed_e*255, imagen_C_inverted)
 imagen_E = cv2.bitwise_not(imagen_E_inv)
 
-#parte 6
-# Paso 1: Invertir imagen E para que los objetos sean blancos (semillas)
+####################################################################
+# ------------------------TEMA 2------------------------------------
+#####################################################################
+
+
+#Invertir imagen E para que los objetos sean blancos (semillas)
 imagen_E_inverted = cv2.bitwise_not(imagen_E)
 
 reconstructed_f = morphological_reconstruction(imagen_E_inverted ,imagen_C)
@@ -120,11 +151,21 @@ reconstructed_f2 = morphological_reconstruction(reconstructed_f ,imagen_C_invert
 reconstructed_f2 =reconstructed_f2 *255
 imagen_F = cv2.bitwise_not(reconstructed_f2 )
 
-#parte 7
+
+
+####################################################################
+# ------------------------TEMA 7------------------------------------
+#####################################################################
+
+
 imagen_a_menos_d= cv2.bitwise_not(cv2.bitwise_xor(imagen_A, imagen_D))
 imagen_G= cv2.bitwise_not(cv2.bitwise_xor(imagen_a_menos_d, imagen_F))
 
-#parte 8
+####################################################################
+# ------------------------TEMA 8------------------------------------
+#####################################################################
+
+
 #invertimos la imagen
 imagen_G_inverted = cv2.bitwise_not(imagen_G)
 #variables que contaran el tipo de celula
@@ -157,7 +198,9 @@ print(f'Células Tipo 3: {tipo3_count}')
 
 
 
-# Mostrar las imágenes
+####################################################################
+# ---------------Visualizacion de imagenes--------------------------
+#####################################################################
 cv2.imshow('Original', mask_bin)
 cv2.imshow('Imagen A', imagen_A)
 cv2.imshow('Imagen B', imagen_B)
@@ -168,7 +211,10 @@ cv2.imshow('Imagen F', imagen_F)
 cv2.imshow('Imagen G', imagen_G)
 cv2.imshow('tipos', np.bitwise_not(output))
 
-#Guardar las imágenes en formato JPG
+####################################################################
+# -----------------Guardado de imagenes------------------------------
+#####################################################################
+
 cv2.imwrite('Original.jpg', mask_bin)
 cv2.imwrite('Imagen_A.jpg', imagen_A)
 cv2.imwrite('Imagen_B.jpg', imagen_B)
